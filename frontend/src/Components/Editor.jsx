@@ -5,31 +5,15 @@ import { initSocket } from "../socket";
 import toast from "react-hot-toast";
 import "./Editor.css";
 import { useRef } from "react";
-import {
-  useLocation,
-  Navigate,
-  useParams,
-  useNavigate,
-} from "react-router-dom";
+import { useLocation, Navigate, useParams } from "react-router-dom";
 
 const Editor = () => {
-  const reactNavigator = useNavigate();
   const socketRef = useRef(null);
   const location = useLocation();
   const { roomId } = useParams();
   const [clients, setClients] = useState([]);
-  console.log(clients);
   useEffect(() => {
     const init = async () => {
-      // socketRef.current.on("connect_error", (err) => handleErrors(err));
-      // socketRef.current.on("connect_failed", (err) => handleErrors(err));
-
-      // function handleErrors(err) {
-      //   console.log("socket error: " + err);
-      //   toast.error("Socket connection failed, try again later!");
-      //   reactNavigator("/");
-      // }
-      console.log(location.state.username);
       socketRef.current = await initSocket();
       socketRef.current.emit("join", {
         roomId,
@@ -75,7 +59,7 @@ const Editor = () => {
         <button className="btn leaveBtn">Leave</button>
       </div>
       <div className="editorwrap">
-        <Ide />
+        <Ide socketRef={socketRef} roomId={roomId } />
       </div>
     </div>
   );

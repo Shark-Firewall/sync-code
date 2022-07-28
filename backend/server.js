@@ -22,19 +22,22 @@ function getAllConnectedClients(roomId) {
 }
 
 io.on("connection", (socket) => {
-  console.log("Socket connected", socket.id);
-
   socket.on("join", ({ roomId, username }) => {
     userSocketMap[socket.id] = username;
     socket.join(roomId);
     const clients = getAllConnectedClients(roomId);
-    console.log(clients);
     clients.forEach(({ socketId }) => {
       io.to(socketId).emit("joined", {
         clients,
         username,
         socketId: socket.id,
       });
+    });
+  });
+
+  socket.on("code_change", ({ roomId, code }) => {
+    socket.in(roomId).emit("code_change", {
+      code,
     });
   });
 
