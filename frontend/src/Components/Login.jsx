@@ -8,14 +8,14 @@ import "./Login.css";
 function Login() {
   const navigate = useNavigate();
   const [roomId, setRoomId] = useState("");
-  const [user, setUser] = useState("");
+  const [username, setUsername] = useState("");
 
   const HandleRoomChange = (e) => {
     setRoomId(e.target.value);
   };
 
   const HandleUserChange = (e) => {
-    setUser(e.target.value);
+    setUsername(e.target.value);
   };
 
   const HandleCreateRoom = (e) => {
@@ -26,12 +26,12 @@ function Login() {
   };
 
   const joinRoom = (e) => {
-    if (!roomId || !user) {
+    if (!roomId || !username) {
       toast.error("Room Id & Username is required");
       return;
     }
     e.preventDefault();
-    navigate(`/editor/${roomId}`, { state: user });
+    navigate(`/editor/${roomId}`, { state: { username } });
   };
 
   const HandleInputEnter = (e) => {
@@ -60,7 +60,7 @@ function Login() {
             className="input-field"
             type="name"
             placeholder="USERNAME"
-            value={user}
+            value={username}
             onKeyUp={HandleInputEnter}
             onChange={HandleUserChange}
           />

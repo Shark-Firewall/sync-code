@@ -7,9 +7,9 @@ import "./Editor.css";
 import { useRef } from "react";
 import {
   useLocation,
-  useNavigate,
   Navigate,
   useParams,
+  useNavigate,
 } from "react-router-dom";
 
 const Editor = () => {
@@ -17,29 +17,44 @@ const Editor = () => {
   const socketRef = useRef(null);
   const location = useLocation();
   const { roomId } = useParams();
+  const [clients, setClients] = useState([]);
+  console.log(clients);
   useEffect(() => {
     const init = async () => {
-      socketRef.current.on("connect_error", (err) => handleErrors(err));
-      socketRef.current.on("connect_failed", (err) => handleErrors(err));
+      // socketRef.current.on("connect_error", (err) => handleErrors(err));
+      // socketRef.current.on("connect_failed", (err) => handleErrors(err));
 
-      function handleErrors(err) {
-        console.log("socket error: " + err.message);
-        toast.error("Socket connection failed, try again later!");
-        reactNavigator("/");
-      }
+      // function handleErrors(err) {
+      //   console.log("socket error: " + err);
+      //   toast.error("Socket connection failed, try again later!");
+      //   reactNavigator("/");
+      // }
+      console.log(location.state.username);
       socketRef.current = await initSocket();
       socketRef.current.emit("join", {
         roomId,
         username: location.state?.username,
       });
+
+      socketRef.current.on("joined", ({ clients, username, socketId }) => {
+        if (username !== location.state?.username) {
+          toast.success(`${username} joined`);
+          console.log(`${username} joined`);
+        }
+        setClients(clients);
+      });
+
+      socketRef.current.on("disconnected", ({ socketId, username }) => {
+        toast.success(`${username} left room`);
+        setClients((prev) => {
+          return prev.filter((client) => client.socketId !== socketId);
+        });
+      });
     };
     init();
   }, []);
-  const [clients, setClients] = useState([
-    { socketId: 1, username: "Rajnish K" },
-    { socketId: 2, username: "Ankit K" },
-  ]);
-  if (!location.state.username) {
+
+  if (!location.state) {
     return <Navigate to="/"></Navigate>;
   }
   return (
