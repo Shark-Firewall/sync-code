@@ -2,7 +2,13 @@ const http = require("http");
 const express = require("express");
 const app = express();
 const { Server } = require("socket.io");
+const path = require("path");
 const PORT = 4500;
+
+app.use(express.static("../frontend/build"));
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 
 const server = http.createServer(app);
 const io = new Server(server);
